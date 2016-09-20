@@ -35,9 +35,9 @@ class ViewController: UIViewController {
         
 
         objectToDraw = Cube(device: device)
-        //objectToDraw.positionX = -0.25
-        //objectToDraw.rotationZ = Matrix4.degreesToRad(degree: 45.0);
-        //objectToDraw.scale = 0.5
+        objectToDraw.positionX = -0.25
+        objectToDraw.rotationZ = 45.0
+        objectToDraw.scale = 0.5
         
         secondObjectToDraw = Cube2(device: device)
         

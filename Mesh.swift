@@ -51,7 +51,6 @@ class Mesh {
         renderEncoderOpt.setVertexBuffer(vertexBuffer, offset: 0, at: 0)
         // 1
         var nodeModelMatrix = self.modelMatrix()
-        print("Model Matrix Is: \(nodeModelMatrix.matrix)")
         // 2
         uniformBuffer = device.makeBuffer(length: MemoryLayout<Float>.size * Matrix4.numberOfElements(), options: [])
         // 3
@@ -66,10 +65,13 @@ class Mesh {
     
     func modelMatrix() -> Matrix4 {
         let matrix = Matrix4()
+        let radX = Matrix4.degreesToRad(degree: rotationX)
+        let radY = Matrix4.degreesToRad(degree: rotationY)
+        let radZ = Matrix4.degreesToRad(degree: rotationZ)
         matrix.position(x: positionX, y: positionY, z: positionZ)
-        //matrix.rotateAround(xAngleRad: rotationX, yAngleRad: rotationY, zAngleRad: rotationZ)
+        matrix.rotateAround(xAngleRad: radX, yAngleRad: radY, zAngleRad: radZ)
         matrix.scale(x: scale, y: scale, z: scale)
-        return matrix
+        return matrix.transpose()
     }
 }
 

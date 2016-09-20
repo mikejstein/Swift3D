@@ -33,10 +33,10 @@ class Matrix4 {
         for i in 0 ..< iMax {
             retMatrixArray.append([Float]())
             for j in 0 ..< jMax {
-                let firstValue = left[i][0] + right[0][j]
-                let secondValue = left[i][1] + right[1][j]
-                let thirdValue = left[i][2] + right[2][j]
-                let fourthValue = left[i][3] + right[3][j]
+                let firstValue = left[i][0] * right[0][j]
+                let secondValue = left[i][1] * right[1][j]
+                let thirdValue = left[i][2] * right[2][j]
+                let fourthValue = left[i][3] * right[3][j]
                 retMatrixArray[i].append(firstValue + secondValue + thirdValue + fourthValue)
                 
             }
@@ -65,18 +65,20 @@ class Matrix4 {
                                   [0, cos(xAngleRad), sin(xAngleRad), 0],
                                   [0, sin(xAngleRad) * -1, cos(xAngleRad), 0],
                                   [0,0,0,1]]
+
         let yRotationMatrix:Matrix4 = Matrix4()
         yRotationMatrix.matrix = [[cos(yAngleRad),0,sin(yAngleRad) * -1,0],
                                   [0, 1, 0, 0],
                                   [sin(yAngleRad), 0, cos(yAngleRad), 0],
                                   [0,0,0,1]]
-        
+
         let zRotationMatrix:Matrix4 = Matrix4()
         zRotationMatrix.matrix = [[cos(zAngleRad),sin(zAngleRad),0,0],
                                  [sin(zAngleRad) * -1, cos(zAngleRad),0, 0],
                                  [0, 0, 1, 0],
                                  [0,0,0,1]]
-        matrix = (xRotationMatrix * yRotationMatrix * zRotationMatrix * self).matrix
+        
+        matrix = (xRotationMatrix * yRotationMatrix * zRotationMatrix * self).matrix        
     }
     
     /*
@@ -102,5 +104,18 @@ class Matrix4 {
     
     static func degreesToRad(degree:Float) -> Float {
         return degree * (.pi / 180)
+    }
+    
+    func transpose() -> Matrix4 {
+        let transposeMatrix:Matrix4 = Matrix4()
+        transposeMatrix.matrix = self.matrix
+        //For each row in our left matrix
+        for i in 0 ..< self.matrix.count {
+            for j in 0 ..< self.matrix[0].count {
+                transposeMatrix.matrix[j][i] = self.matrix[i][j]
+                
+            }
+        }
+        return transposeMatrix
     }
 }
