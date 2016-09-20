@@ -9,12 +9,25 @@
 import Foundation
 import Metal
 import QuartzCore
+import GLKit
 
 class Mesh {
     let name: String
     var vertexCount: Int
     var vertexBuffer: MTLBuffer
     var device: MTLDevice
+    
+    var positionX:Float = 0.0
+    var positionY:Float = 0.0
+    var positionZ:Float = 0.0
+    
+    var rotationX:Float = 0.0
+    var rotationY:Float = 0.0
+    var rotationZ:Float = 0.0
+    var scale:Float     = 1.0
+    
+    var uniformBuffer:MTLBuffer?
+    
     
     init(name: String, vertices: Array<Vertex>, device: MTLDevice) {
         var vertexData = Array<Float>()
@@ -36,8 +49,27 @@ class Mesh {
     
     func render(renderEncoderOpt: MTLRenderCommandEncoder){
         renderEncoderOpt.setVertexBuffer(vertexBuffer, offset: 0, at: 0)
+        // 1
+        var nodeModelMatrix = self.modelMatrix()
+        print("Model Matrix Is: \(nodeModelMatrix.matrix)")
+        // 2
+        uniformBuffer = device.makeBuffer(length: MemoryLayout<Float>.size * Matrix4.numberOfElements(), options: [])
+        // 3
+        var bufferPointer = uniformBuffer?.contents()
+        // 4
+        memcpy(bufferPointer!, nodeModelMatrix.raw(), MemoryLayout<Float>.size*Matrix4.numberOfElements())
+        // 5
+        renderEncoderOpt.setVertexBuffer(self.uniformBuffer, offset: 0, at: 1)
         renderEncoderOpt.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexCount, instanceCount: 1)
 
+    }
+    
+    func modelMatrix() -> Matrix4 {
+        let matrix = Matrix4()
+        matrix.position(x: positionX, y: positionY, z: positionZ)
+        //matrix.rotateAround(xAngleRad: rotationX, yAngleRad: rotationY, zAngleRad: rotationZ)
+        matrix.scale(x: scale, y: scale, z: scale)
+        return matrix
     }
 }
 
@@ -57,15 +89,15 @@ class Cube: Mesh {
     init(device: MTLDevice){
         
         
-        let A = Vertex(x: -0.3, y:   0.3, z:   0.3, r:  1.0, g:  0.0, b:  0.0, a:  1.0)
-        let B = Vertex(x: -0.3, y:  -0.3, z:   0.3, r:  0.0, g:  1.0, b:  0.0, a:  1.0)
-        let C = Vertex(x:  0.3, y:  -0.3, z:   0.3, r:  0.0, g:  0.0, b:  1.0, a:  1.0)
-        let D = Vertex(x:  0.3, y:   0.3, z:   0.3, r:  0.1, g:  0.6, b:  0.4, a:  1.0)
+        let A = Vertex(x: -1.0, y:   1.0, z:   1.0, r:  1.0, g:  0.0, b:  0.0, a:  1.0)
+        let B = Vertex(x: -1.0, y:  -1.0, z:   1.0, r:  0.0, g:  1.0, b:  0.0, a:  1.0)
+        let C = Vertex(x:  1.0, y:  -1.0, z:   1.0, r:  0.0, g:  0.0, b:  1.0, a:  1.0)
+        let D = Vertex(x:  1.0, y:   1.0, z:   1.0, r:  0.1, g:  0.6, b:  0.4, a:  1.0)
         
-        let Q = Vertex(x: -0.3, y:   0.3, z:  -0.3, r:  1.0, g:  0.0, b:  0.0, a:  1.0)
-        let R = Vertex(x:  0.3, y:   0.3, z:  -0.3, r:  0.0, g:  1.0, b:  0.0, a:  1.0)
-        let S = Vertex(x: -0.3, y:  -0.3, z:  -0.3, r:  0.0, g:  0.0, b:  1.0, a:  1.0)
-        let T = Vertex(x:  0.3, y:  -0.3, z:  -0.3, r:  0.1, g:  0.6, b:  0.4, a:  1.0)
+        let Q = Vertex(x: -1.0, y:   1.0, z:  -1.0, r:  1.0, g:  0.0, b:  0.0, a:  1.0)
+        let R = Vertex(x:  1.0, y:   1.0, z:  -1.0, r:  0.0, g:  1.0, b:  0.0, a:  1.0)
+        let S = Vertex(x: -1.0, y:  -1.0, z:  -1.0, r:  0.0, g:  0.0, b:  1.0, a:  1.0)
+        let T = Vertex(x:  1.0, y:  -1.0, z:  -1.0, r:  0.1, g:  0.6, b:  0.4, a:  1.0)
         
         let verticesArray:Array<Vertex> = [
             A,B,C ,A,C,D,   //Front

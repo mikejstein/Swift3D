@@ -18,8 +18,8 @@ class ViewController: UIViewController {
     var commandQueue: MTLCommandQueue! = nil
     var timer: CADisplayLink! = nil
     
-    var objectToDraw: Cube2!
-    var secondObjectToDraw: Cube!
+    var objectToDraw: Cube!
+    var secondObjectToDraw: Cube2!
 
 
     override func viewDidLoad() {
@@ -34,8 +34,12 @@ class ViewController: UIViewController {
         view.layer.addSublayer(metalLayer)   // 6
         
 
-        objectToDraw = Cube2(device: device)
-        secondObjectToDraw = Cube(device: device)
+        objectToDraw = Cube(device: device)
+        //objectToDraw.positionX = -0.25
+        //objectToDraw.rotationZ = Matrix4.degreesToRad(degree: 45.0);
+        //objectToDraw.scale = 0.5
+        
+        secondObjectToDraw = Cube2(device: device)
         
         // 1
         let defaultLibrary = device.newDefaultLibrary()
@@ -80,7 +84,7 @@ class ViewController: UIViewController {
 
 
         objectToDraw.render(renderEncoderOpt: renderEncoderOpt)
-        secondObjectToDraw.render(renderEncoderOpt: renderEncoderOpt)
+        //secondObjectToDraw.render(renderEncoderOpt: renderEncoderOpt)
         
         renderEncoderOpt.endEncoding()
         
